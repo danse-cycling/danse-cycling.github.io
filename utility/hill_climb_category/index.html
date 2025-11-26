@@ -234,7 +234,6 @@
     document.getElementById("addClimbBtn").addEventListener("click", () => {
       const distance = Number(distanceRange.value);
       const gradient = Number(gradientRange.value);
-      const kilometer = distance;//Math.round(distance / 100) / 10;
       const name = (document.getElementById("name").value.trim() || `Climb ${climbsDataset.data.length + 1}`);
 
       const D = distance * 1000 * gradient;
@@ -247,8 +246,8 @@
 
       const line =
         `${name} → 거리: ${distance} km, ` +
-        `경사: ${gradient.toFixed(1)} %, D = ${D.toFixed(0)}, ` +
-        `LOG(D/8000,2) = ${logValue.toFixed(2)}, CAT = ${cat}`;
+        `경사: ${gradient.toFixed(1)} %, score = ${D.toFixed(0)}, ` +
+        `5 - LOG(score/8000,2) = ${5 - logValue.toFixed(2)}, CAT = ${cat}`;
 
       const infoDiv = document.getElementById("info");
       infoDiv.textContent = (infoDiv.textContent ? infoDiv.textContent + "\n" : "") + line;
