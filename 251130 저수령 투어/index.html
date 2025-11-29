@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>단세투어</title>
+    <style>
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans","Helvetica Neue",Arial;background:#fff;padding:24px;color:#111}
+        h1{font-size:1.1rem;margin:0 0 12px}
+        pre{background:#f7f7f8;border:1px solid #e1e1e6;padding:16px;border-radius:6px;overflow:auto;white-space:pre-wrap;word-break:break-word}
+        code{font-family:Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;display:block}
+        .error{color:#c00}
+    </style>
+    <script>
+        function loadContent() {
+            fetch(`${window.location.href}/index.md`)
+                .then(response => {
+                    if (!response.ok) throw new Error(response.status + ' ' + response.statusText);
+                    return response.text();
+                })
+                .then(text => {
+                    const firstLine = text.split('\n')[0];
+                    document.querySelector('title').textContent = firstLine;
+                    document.querySelector('#content code').textContent = text;
+                })
+                .catch(err => {
+                    const el = document.getElementById('content');
+                    el.textContent = '파일을 불러오는 중 오류가 발생했습니다: ' + err.message;
+                    el.classList.add('error');
+                });
+        }
+
+        function loadImages() {
+            const imagesEl = document.getElementById('images');
+            const dirUrl = `${window.location.href}/이미지자료/`;
+
+            fetch(dirUrl)
+                .then(r => {
+                    if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+                    return r.text();
+                })
+                .then(html => {
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const anchors = Array.from(doc.querySelectorAll('a'))
+                        .filter(a => a.href && !a.href.endsWith('/'));
+                    const imgs = anchors
+                        .map(a => a.href)
+                        .filter(h => /\.(jpe?g|png|gif|webp|svg)$/i.test(h));
+                    if (!imgs.length) {
+                        imagesEl.textContent = '이미지 파일이 없습니다.';
+                        return;
+                    }
+
+                    const style = document.createElement('style');
+                    style.textContent = `
+                        .carousel { position:relative; max-width:100%; display:flex; align-items:center; justify-content:center; background:#f7f7f8; padding:8px; border-radius:6px; }
+                        .carousel > img.main { max-width:100%; max-height:60vh; display:block; border-radius:6px; }
+                        .carousel button.nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.45); color:#fff; border:none; padding:8px 10px; border-radius:4px; cursor:pointer; }
+                        .carousel button.nav.prev { left:8px; }
+                        .carousel button.nav.next { right:8px; }
+                        .thumbs { display:flex; gap:6px; margin-top:8px; overflow:auto; padding-bottom:6px; }
+                        .thumbs img { height:56px; cursor:pointer; border-radius:4px; opacity:0.7; border:2px solid transparent; }
+                        .thumbs img.active { opacity:1; border-color:#0078d4; }
+                        .carousel, .thumbs { box-sizing:border-box; }
+                    `;
+                    document.head.appendChild(style);
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'carousel';
+
+                    const mainImg = document.createElement('img');
+                    mainImg.className = 'main';
+                    mainImg.alt = '';
+                    mainImg.src = imgs[0];
+
+                    const prevBtn = document.createElement('button');
+                    prevBtn.className = 'nav prev';
+                    prevBtn.type = 'button';
+                    prevBtn.textContent = '◀';
+
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = 'nav next';
+                    nextBtn.type = 'button';
+                    nextBtn.textContent = '▶';
+
+                    wrapper.appendChild(prevBtn);
+                    wrapper.appendChild(mainImg);
+                    wrapper.appendChild(nextBtn);
+
+                    const thumbs = document.createElement('div');
+                    thumbs.className = 'thumbs';
+
+                    imgs.forEach((src, i) => {
+                        const t = document.createElement('img');
+                        t.src = src;
+                        t.dataset.index = i;
+                        t.alt = '';
+                        t.addEventListener('click', () => show(i));
+                        thumbs.appendChild(t);
+                    });
+
+                    imagesEl.innerHTML = '';
+                    imagesEl.appendChild(wrapper);
+                    imagesEl.appendChild(thumbs);
+
+                    let index = 0;
+                    function show(i) {
+                        index = (i + imgs.length) % imgs.length;
+                        mainImg.src = imgs[index];
+                        Array.from(thumbs.children).forEach((tn, idx) => tn.classList.toggle('active', idx === index));
+                    }
+
+                    prevBtn.addEventListener('click', () => show(index - 1));
+                    nextBtn.addEventListener('click', () => show(index + 1));
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'ArrowLeft') show(index - 1);
+                        if (e.key === 'ArrowRight') show(index + 1);
+                    });
+
+                    let timer = setInterval(() => show(index + 1), 5000);
+                    [wrapper, thumbs].forEach(el => {
+                        el.addEventListener('mouseenter', () => clearInterval(timer));
+                        el.addEventListener('mouseleave', () => {
+                            clearInterval(timer);
+                            timer = setInterval(() => show(index + 1), 5000);
+                        });
+                    });
+
+                    show(0);
+                })
+                .catch(err => {
+                    imagesEl.textContent = '이미지 목록을 불러오는 중 오류가 발생했습니다: ' + err.message;
+                    imagesEl.classList.add('error');
+                });
+        }
+
+        function loadFiles() {
+            fetch(`${window.location.href}/코스파일/`)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const links = Array.from(doc.querySelectorAll('a'))
+                        .filter(a => a.href && !a.href.endsWith('/'))
+                        .map(a => `<a href="${a.href}">${a.textContent}</a>`)
+                        .join('<br/>');
+                    document.querySelector('#files').innerHTML = links;
+                })
+                .catch(err => {
+                    const el = document.getElementById('files');
+                    el.textContent = '파일 목록을 불러올 수 없습니다: ' + err.message;
+                    el.classList.add('error');
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent();
+            loadImages();
+            loadFiles();
+        });
+    </script>
+
+</head>
+<body>
+    <pre id="content"><code>로딩 중...</code></pre>
+    <p id="images">로딩 중...</p>
+    <p id="files">로딩 중...</p>
+
+</body>
+</html>
