@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>단세 라이드 인포그래픽</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+:root{
+  --bg:#0b1220;
+  --card:#121b2f;
+  --muted:#93a4c7;
+  --text:#e9efff;
+  --accent:#5eead4;
+  --accent2:#60a5fa;
+  --shadow: 0 12px 30px rgba(0,0,0,.25);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Apple SD Gothic Neo, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  background: radial-gradient(1200px 700px at 20% 0%, rgba(96,165,250,.20), transparent 60%),
+              radial-gradient(1200px 700px at 80% 10%, rgba(94,234,212,.16), transparent 55%),
+              var(--bg);
+  color:var(--text);
+}
+a{color:var(--accent); text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:1200px; margin:0 auto; padding:28px 18px 40px}
+.header{
+  display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px;
+  margin-bottom:18px;
+}
+.title{
+  font-size:28px; font-weight:800; letter-spacing:-.02em; margin:0;
+}
+.subtitle{
+  margin:6px 0 0; color:var(--muted); font-size:14px;
+}
+.badges{display:flex; gap:8px; flex-wrap:wrap}
+.badge{
+  padding:6px 10px; border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.05); border-radius:999px; color:var(--muted); font-size:12px;
+}
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap:14px;
+}
+.card{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--radius);
+  padding:14px 14px 12px;
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.card h3{
+  margin:0 0 10px;
+  font-size:14px; letter-spacing:.02em;
+  color:rgba(233,239,255,.92);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.kpi{
+  display:flex; flex-direction:column; gap:6px;
+}
+.kpi .value{
+  font-size:26px; font-weight:800; line-height:1.1;
+}
+.kpi .hint{color:var(--muted); font-size:12px}
+.small{color:var(--muted); font-size:12px}
+.span-3{grid-column: span 3;}
+.span-4{grid-column: span 4;}
+.span-5{grid-column: span 5;}
+.span-6{grid-column: span 6;}
+.span-7{grid-column: span 7;}
+.span-8{grid-column: span 8;}
+.span-12{grid-column: span 12;}
+@media (max-width: 980px){
+  .span-3,.span-4,.span-5,.span-6,.span-7,.span-8{grid-column: span 12;}
+  .title{font-size:24px}
+}
+.canvas-wrap{height:260px}
+.canvas-wrap.tall{height:320px}
+table{width:100%; border-collapse:collapse}
+th,td{padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); font-size:13px}
+th{color:var(--muted); font-weight:600; text-align:left}
+tr:hover{background:rgba(255,255,255,.04)}
+.footer{margin-top:16px; color:var(--muted); font-size:12px; text-align:center}
+.note{
+  color:var(--muted);
+  font-size:12px;
+  margin:10px 0 0;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1 class="title">단세 라이드 인포그래픽</h1>
+        <p class="subtitle">CSV 데이터(라이드 목록)를 자동 분석해 만든 대시보드 · 브라우저에서 단일 HTML로 열 수 있어요.</p>
+      </div>
+      <div class="badges">
+        <span class="badge">총 234건</span>
+        <span class="badge">2023-07-04 → 2025-12-14</span>
+        <span class="badge">업데이트: 2025-12-16 06:52</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card span-3" id="k_total">
+        <h3>총 라이드</h3>
+        <div class="kpi"><div class="value">-</div><div class="hint">-</div></div>
+      </div>
+      <div class="card span-3" id="k_weekday">
+        <h3>최다 요일</h3>
+        <div class="kpi"><div class="value">-</div><div class="hint">-</div></div>
+      </div>
+      <div class="card span-3" id="k_time">
+        <h3>최다 출발 시간대</h3>
+        <div class="kpi"><div class="value">-</div><div class="hint">-</div></div>
+      </div>
+      <div class="card span-3" id="k_tag">
+        <h3>최다 태그</h3>
+        <div class="kpi"><div class="value">-</div><div class="hint">-</div></div>
+      </div>
+
+      <div class="card span-6">
+        <h3>연도별 라이드 수</h3>
+        <div class="canvas-wrap"><canvas id="c_year"></canvas></div>
+      </div>
+      <div class="card span-6">
+        <h3>월별 라이드 수 (추이)</h3>
+        <div class="canvas-wrap"><canvas id="c_month"></canvas></div>
+      </div>
+
+      <div class="card span-6">
+        <h3>요일 분포</h3>
+        <div class="canvas-wrap"><canvas id="c_weekday"></canvas></div>
+      </div>
+      <div class="card span-6">
+        <h3>태그 분포 (상위)</h3>
+        <div class="canvas-wrap"><canvas id="c_tag"></canvas></div>
+        <div class="note">※ 태그가 비어있는 항목은 ‘미지정’으로 집계</div>
+      </div>
+
+      <div class="card span-7">
+        <h3>출발 시간대 분포</h3>
+        <div class="canvas-wrap tall"><canvas id="c_time"></canvas></div>
+        <div class="note">※ 시간 컬럼이 비어있는 항목은 제외</div>
+      </div>
+
+      <div class="card span-5" id="distanceCard">
+        <h3>제목에서 추출한 거리 분포</h3>
+        <div class="kpi" id="k_dist" style="margin-bottom:10px;">
+          <div class="value">-</div>
+          <div class="hint">-</div>
+        </div>
+        <div class="canvas-wrap"><canvas id="c_dist"></canvas></div>
+        <div class="note" id="distNote"></div>
+      </div>
+
+      <div class="card span-12">
+        <h3>최근 라이드 10건</h3>
+        <table>
+          <thead><tr><th style="width:160px;">일시</th><th>제목</th><th style="width:120px;">태그</th></tr></thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">© 자동 생성 · 원본 CSV의 “제목/태그/시간” 표기 방식에 따라 일부 지표는 표본이 줄어들 수 있어요.</div>
+  </div>
+
+  <script>window.__DATA__ = {"kpi": {"total": 234, "date_min": "2023-07-04", "date_max": "2025-12-14", "span_days": 894, "most_weekday": "Sunday", "most_weekday_count": 56, "peak_time_bin": "[5, 7)", "peak_time_count": 114, "top_tag": "미지정", "top_tag_count": 65, "avg_distance": 138.33333333333334, "median_distance": 132.0, "distance_count": 36}, "charts": {"year": {"labels": ["2023", "2024", "2025"], "values": [67, 105, 62]}, "month": {"labels": ["2023-07", "2023-08", "2023-09", "2023-10", "2023-11", "2023-12", "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08", "2024-09", "2024-10", "2024-11", "2024-12", "2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06", "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12"], "values": [8, 22, 21, 10, 6, 0, 0, 7, 5, 15, 14, 18, 6, 7, 13, 10, 8, 2, 11, 4, 3, 3, 5, 5, 7, 7, 5, 0, 9, 3]}, "weekday": {"labels": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "values": [11, 33, 46, 37, 19, 32, 56]}, "tag": {"labels": ["미지정", "스포츠투어", "중급", "초중급", "급벙", "초중급+", "스포츠투어,중급", "앳던라이드", "기타"], "values": [65, 14, 14, 10, 6, 5, 5, 4, 111]}, "time": {"labels": ["00:00–05:00", "05:00–07:00", "07:00–09:00", "09:00–11:00", "11:00–13:00", "13:00–15:00", "15:00–17:00", "17:00–19:00", "19:00–21:00", "21:00–24:00"], "values": [2, 114, 30, 17, 2, 6, 2, 2, 6, 1]}, "distance": {"labels": ["0–20km", "20–40km", "40–60km", "60–80km", "80–100km", "100–120km", "120–140km", "140–160km", "160–180km", "180–200km", "200–220km"], "values": [0, 0, 0, 4, 1, 7, 10, 2, 3, 4, 5], "count": 36}}, "recent": [{"date": "2025-12-14", "time": "", "title": "남해 아웃사이드", "link": "https://cafe.naver.com/clublara/26199", "tag": "미지정"}, {"date": "2025-12-10", "time": " 08:00", "title": "버터킹빵공장🥐☕️", "link": "https://cafe.naver.com/clublara/26182", "tag": "초중급"}, {"date": "2025-12-07", "time": "", "title": "안동호 128K", "link": "https://cafe.naver.com/clublara/26167", "tag": "미지정"}, {"date": "2025-11-30", "time": "", "title": "저수령 118K", "link": "https://cafe.naver.com/clublara/26105", "tag": "미지정"}, {"date": "2025-11-26", "time": " 07:00", "title": "태음, 아라한강갑문 왕복 85K", "link": "https://cafe.naver.com/clublara/26101", "tag": "초중급"}, {"date": "2025-11-22", "time": " 07:00", "title": "태음, 멧돼지 방구뿡🐗💨", "link": "https://cafe.naver.com/clublara/26049", "tag": "초중급"}, {"date": "2025-11-19", "time": "", "title": "지리산 109K", "link": "https://cafe.naver.com/clublara/25962", "tag": "스포츠투어"}, {"date": "2025-11-15", "time": "", "title": "월악산 131K", "link": "https://cafe.naver.com/clublara/25951", "tag": "스포츠투어"}, {"date": "2025-11-12", "time": " 06:00", "title": "태음, 멧돼지 69K", "link": "https://cafe.naver.com/clublara/25955", "tag": "29-35"}, {"date": "2025-11-09", "time": "", "title": "안흥찐빵 138K", "link": "https://cafe.naver.com/clublara/25856", "tag": "스포츠투어"}]};</script>
+  <script>
+function fmt(n){ return new Intl.NumberFormat().format(n); }
+const data = window.__DATA__;
+
+function kpi(id, value, hint){
+  document.getElementById(id).querySelector('.value').textContent = value;
+  document.getElementById(id).querySelector('.hint').textContent = hint;
+}
+
+function buildRecent(){
+  const tbody=document.getElementById('recentBody');
+  tbody.innerHTML='';
+  for(const r of data.recent){
+    const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.date}${r.time?` <span class="small">(${r.time})</span>`:''}</td>
+      <td><a href="${r.link}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a></td>
+      <td>${escapeHtml(r.tag)}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+}
+
+function chartBar(canvasId, labels, values, opts={}){
+  const ctx=document.getElementById(canvasId);
+  return new Chart(ctx,{
+    type:'bar',
+    data:{labels, datasets:[{label:opts.label||'건수', data:values, borderWidth:1}]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>` ${fmt(c.parsed.y)}건`}}},
+      scales:{
+        x:{ticks:{color:'rgba(233,239,255,.75)'}, grid:{color:'rgba(255,255,255,.06)'}},
+        y:{ticks:{color:'rgba(233,239,255,.75)'}, grid:{color:'rgba(255,255,255,.06)'}, beginAtZero:true}
+      }
+    }
+  });
+}
+
+function chartLine(canvasId, labels, values){
+  const ctx=document.getElementById(canvasId);
+  return new Chart(ctx,{
+    type:'line',
+    data:{labels, datasets:[{label:'월별', data:values, tension:.3, fill:false, pointRadius:2}]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:(c)=>` ${fmt(c.parsed.y)}건`}}},
+      scales:{
+        x:{ticks:{color:'rgba(233,239,255,.75)', maxRotation:0, autoSkip:true}, grid:{color:'rgba(255,255,255,.06)'}},
+        y:{ticks:{color:'rgba(233,239,255,.75)'}, grid:{color:'rgba(255,255,255,.06)'}, beginAtZero:true}
+      }
+    }
+  });
+}
+
+function chartDoughnut(canvasId, labels, values){
+  const ctx=document.getElementById(canvasId);
+  return new Chart(ctx,{
+    type:'doughnut',
+    data:{labels, datasets:[{data:values, borderWidth:1}]},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'bottom', labels:{color:'rgba(233,239,255,.75)', boxWidth:12}},
+        tooltip:{callbacks:{label:(c)=>` ${c.label}: ${fmt(c.parsed)}건`}}
+      }
+    }
+  });
+}
+
+function init(){
+  const k=data.kpi;
+  kpi('k_total', fmt(k.total), `기간: ${k.date_min} ~ ${k.date_max} (${fmt(k.span_days)}일)`);
+  kpi('k_weekday', k.most_weekday, `최다 요일: ${fmt(k.most_weekday_count)}건`);
+  kpi('k_time', k.peak_time_bin.replace('[','').replace(')',''), `최다 시간대: ${fmt(k.peak_time_count)}건`);
+  kpi('k_tag', k.top_tag, `최다 태그: ${fmt(k.top_tag_count)}건`);
+  if(k.distance_count>0){
+    const avg = k.avg_distance ? k.avg_distance.toFixed(1) : '-';
+    const med = k.median_distance ? k.median_distance.toFixed(1) : '-';
+    kpi('k_dist', `${avg}km`, `거리표기 ${fmt(k.distance_count)}건 · 중앙값 ${med}km`);
+    document.getElementById('distanceCard').style.display='block';
+  }else{
+    document.getElementById('distanceCard').style.display='none';
+  }
+  buildRecent();
+
+  chartBar('c_year', data.charts.year.labels, data.charts.year.values);
+  chartLine('c_month', data.charts.month.labels, data.charts.month.values);
+  chartBar('c_weekday', data.charts.weekday.labels, data.charts.weekday.values);
+  chartDoughnut('c_tag', data.charts.tag.labels, data.charts.tag.values);
+  chartBar('c_time', data.charts.time.labels, data.charts.time.values, {label:'출발 시간'});
+  if(data.charts.distance){
+    chartBar('c_dist', data.charts.distance.labels, data.charts.distance.values, {label:'거리'});
+    document.getElementById('distNote').textContent = `※ 제목에 거리(K/km)가 포함된 ${fmt(data.charts.distance.count)}건만 집계`;
+  }
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
