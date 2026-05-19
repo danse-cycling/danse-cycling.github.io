@@ -6,10 +6,10 @@ url: "https://danse-cycling.github.io"
 lang: ko-KR
 timezone: Asia/Seoul
 
-markdown: kramdown
-kramdown:
-  input: GFM
-  hard_wrap: true
+markdown: CommonMarkGhPages
+commonmark:
+  options: ["HARDBREAKS", "UNSAFE"]
+  extensions: ["table", "strikethrough", "autolink", "tagfilter"]
 
 plugins:
   - jekyll-seo-tag
