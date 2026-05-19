@@ -1,4 +1,5 @@
 title: 단세 사이클링
+theme: null
 description: 단세사이클링 라이드 & 투어 기록
 baseurl: ""
 url: "https://danse-cycling.github.io"
@@ -13,14 +14,12 @@ kramdown:
 plugins:
   - jekyll-seo-tag
   - jekyll-optional-front-matter
-  - jekyll-relative-links
 
 optional_front_matter:
   remove_originals: true
 
 relative_links:
-  enabled: true
-  collections: false
+  enabled: false
 
 defaults:
   - scope:
