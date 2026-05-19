@@ -5,10 +5,7 @@ layout: default
   <h1 class="page-heading">라이드 & 투어</h1>
 
   <div class="tour-grid">
-    {% assign tours = site.pages
-       | where_exp: "p", "p.name == 'index.md' and p.dir != '/'"
-       | sort: "date"
-       | reverse %}
+    {% assign tours = site.pages | where_exp: "p", "p.name == 'index.md' and p.dir != '/'" | sort: "date" | reverse %}
 
     {% for tour in tours %}
       {% assign tour_name = tour.dir | remove: "/" | strip %}
