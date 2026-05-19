@@ -1,0 +1,41 @@
+title: 단세 사이클링
+description: 단세사이클링 라이드 & 투어 기록
+baseurl: ""
+url: "https://danse-cycling.github.io"
+lang: ko-KR
+timezone: Asia/Seoul
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: true
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-optional-front-matter
+  - jekyll-relative-links
+
+optional_front_matter:
+  remove_originals: true
+
+relative_links:
+  enabled: true
+  collections: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "tour"
+  - scope:
+      path: "index.md"
+      type: "pages"
+    values:
+      layout: "home"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - .DS_Store
+  - README.md
+  - "**/.DS_Store"

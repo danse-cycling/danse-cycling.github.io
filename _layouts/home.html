@@ -1,0 +1,32 @@
+---
+layout: default
+---
+<div class="home">
+  <h1 class="page-heading">라이드 & 투어</h1>
+
+  <div class="tour-grid">
+    {% assign tours = site.pages
+       | where_exp: "p", "p.name == 'index.md' and p.dir != '/'"
+       | sort: "date"
+       | reverse %}
+
+    {% for tour in tours %}
+      {% assign tour_name = tour.dir | remove: "/" | strip %}
+      <a href="{{ tour.url | relative_url }}" class="tour-card">
+        <div class="tour-thumb">
+          <img
+            src="{{ tour.url | relative_url }}intro.png"
+            alt="{{ tour.title | default: tour_name }}"
+            onerror="this.style.display='none';this.parentElement.innerHTML='🚴';"
+          >
+        </div>
+        <div class="tour-info">
+          <h2>{{ tour.title | default: tour_name }}</h2>
+          {% if tour.date %}
+            <time datetime="{{ tour.date | date: '%Y-%m-%d' }}">{{ tour.date | date: "%Y.%m.%d" }}</time>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</div>

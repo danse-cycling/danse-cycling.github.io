@@ -1,3 +1,7 @@
+---
+title: 가평 5고개
+date: 2025-04-02
+---
 ![Intro Image](./intro.png)
 
 

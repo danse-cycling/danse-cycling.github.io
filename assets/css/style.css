@@ -1,0 +1,272 @@
+/* ============================================================
+   단세 사이클링 — Global Styles
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --black:    #111111;
+  --white:    #ffffff;
+  --gray-100: #f5f5f5;
+  --gray-200: #e4e4e4;
+  --gray-400: #aaaaaa;
+  --gray-600: #666666;
+  --accent:   #e63946;
+  --font:     'Noto Sans KR', -apple-system, BlinkMacSystemFont,
+              'Segoe UI', Roboto, sans-serif;
+  --radius:   8px;
+  --max-w:    960px;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--black);
+  background: var(--white);
+  line-height: 1.75;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+img { display: block; max-width: 100%; }
+
+/* ── Container ─────────────────────────────────────────────── */
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.site-header {
+  background: var(--black);
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--accent);
+}
+
+.site-title {
+  text-decoration: none;
+  color: var(--white);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  transition: color 0.15s;
+}
+
+.site-title:hover { color: var(--accent); }
+
+/* ── Main ───────────────────────────────────────────────────── */
+.main-content {
+  min-height: calc(100vh - 120px);
+  padding: 40px 0 60px;
+}
+
+/* ── Home — Tour Grid ───────────────────────────────────────── */
+.page-heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--black);
+}
+
+.tour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 20px;
+}
+
+.tour-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--white);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10);
+}
+
+.tour-thumb {
+  aspect-ratio: 16 / 9;
+  background: var(--gray-100);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--gray-400);
+}
+
+.tour-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.tour-card:hover .tour-thumb img {
+  transform: scale(1.04);
+}
+
+.tour-info {
+  padding: 14px 16px 16px;
+  flex: 1;
+}
+
+.tour-info h2 {
+  font-size: 0.975rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+.tour-info time {
+  font-size: 0.825rem;
+  color: var(--gray-600);
+}
+
+/* ── Tour Page ──────────────────────────────────────────────── */
+.tour-page {
+  max-width: 720px;
+}
+
+.tour-header {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.tour-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.tour-date {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+/* ── Tour Content (Markdown) ────────────────────────────────── */
+.tour-content {
+  line-height: 1.8;
+}
+
+.tour-content p {
+  margin-bottom: 14px;
+}
+
+.tour-content img {
+  border-radius: var(--radius);
+  margin: 18px 0;
+  max-width: 100%;
+}
+
+.tour-content h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 32px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.tour-content h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 24px 0 10px;
+}
+
+.tour-content ul,
+.tour-content ol {
+  padding-left: 22px;
+  margin-bottom: 14px;
+}
+
+.tour-content li {
+  margin-bottom: 5px;
+}
+
+.tour-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  word-break: break-all;
+}
+
+.tour-content a:hover {
+  text-decoration: none;
+}
+
+.tour-content strong {
+  font-weight: 700;
+}
+
+.tour-content hr {
+  border: none;
+  border-top: 1px solid var(--gray-200);
+  margin: 28px 0;
+}
+
+.tour-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 8px 16px;
+  margin: 16px 0;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* ── Back Button ────────────────────────────────────────────── */
+.tour-back {
+  margin-top: 52px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.tour-back a {
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.925rem;
+  color: var(--black);
+  transition: color 0.15s;
+}
+
+.tour-back a:hover { color: var(--accent); }
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--gray-200);
+  padding: 20px 0;
+  color: var(--gray-400);
+  font-size: 0.825rem;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .tour-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tour-title {
+    font-size: 1.3rem;
+  }
+
+  .main-content {
+    padding: 28px 0 48px;
+  }
+}

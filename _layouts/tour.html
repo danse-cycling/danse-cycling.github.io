@@ -1,0 +1,23 @@
+---
+layout: default
+---
+<article class="tour-page">
+  {% if page.title %}
+    <header class="tour-header">
+      <h1 class="tour-title">{{ page.title }}</h1>
+      {% if page.date %}
+        <time class="tour-date" datetime="{{ page.date | date: '%Y-%m-%d' }}">
+          {{ page.date | date: "%Y년 %m월 %d일" }}
+        </time>
+      {% endif %}
+    </header>
+  {% endif %}
+
+  <div class="tour-content">
+    {{ content }}
+  </div>
+
+  <div class="tour-back">
+    <a href="{{ '/' | relative_url }}">← 전체 투어 목록</a>
+  </div>
+</article>
